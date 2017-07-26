@@ -25,11 +25,3 @@ testdata = [
 def test_mult(a, b, expected):
     assert mp2.math.mult(a, b) == expected
     assert mp2.math.mult(b, a) == expected
-
-testdata = [
-    (2, 5, 10),
-    (1, 2, 2),
-    (11, 9, 99),
-    (0, 0, 0)
-]
-
