@@ -21,3 +21,4 @@ def mult(a,b):
     :return: The values that multiplies a and b
     """
     return a * b
+
