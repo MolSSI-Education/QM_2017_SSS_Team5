@@ -21,3 +21,9 @@ def mult(a,b):
     :return: The values that multiplies a and b
     """
     return a * b
+
+def integ(num1, num2):
+    """
+    This function is lazy and does nothing!
+    """
+    pass
