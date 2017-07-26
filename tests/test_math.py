@@ -7,13 +7,13 @@ before running this script to check if `pytest` is installed.
 After scripts are done, use
 `py.test -v`
 """
-import mp2
+import project as pj
 import pytest
 
 #Using `test_` as function so pytest can recognize.
 def test_add():
-    assert mp2.math.add(5,2) == 7
-    assert mp2.math.add(2,5) == 7
+    assert pj.math.add(5,2) == 7
+    assert pj.math.add(2,5) == 7
 
 testdata = [
     (2, 5, 10),
@@ -23,5 +23,5 @@ testdata = [
 ]
 @pytest.mark.parametrize("a, b, expected", testdata)
 def test_mult(a, b, expected):
-    assert mp2.math.mult(a, b) == expected
-    assert mp2.math.mult(b, a) == expected
+    assert pj.math.mult(a, b) == expected
+    assert pj.math.mult(b, a) == expected
