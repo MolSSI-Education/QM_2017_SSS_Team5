@@ -2,10 +2,49 @@
 [![Build Status](https://travis-ci.org/Kee-Wang/QM_2017_SSS_Team5.svg?branch=master)](https://travis-ci.org/Kee-Wang/QM_2017_SSS_Team5)
 [![codecov](https://codecov.io/gh/Kee-Wang/QM_2017_SSS_Team5/branch/master/graph/badge.svg)](https://codecov.io/gh/Kee-Wang/QM_2017_SSS_Team5)
 
-* Hi,I'm cici
+We are team QM5 and we are 
+* cici
+* Sahil Gulania
+* Charitha
+* Kee (Team Leader)
 
-* I'm Kee, welcom to QM5, this is my second pull.
 
-* I am Sahil Gulania, 
+# Useful codes/notes
 
-* I am Charitha
+## Github workflow
+
+See notes for details. Here are some comments.
+
+
+* In first establishment, there is a work flow as: upstream -(`fork`)-> origin -(`git clone`)-> local machine.
+
+* After that, in order to keep everything in sync:
+
+### upstream -/-> origin
+
+* This direction works only for first time when `fork`.
+
+### upstream --> local
+
+* To check: `git remote -v`
+* First time: `git remote add upstream [HTTP URL]`, then `git fetch upstream`
+* Then `git reset --hard upstream/origin`: This deletes your local and duplicate upstream to your local.
+
+### origin --> upstream
+
+* `pull request` in web end.
+
+### origin --> local
+
+* First time: `git clone [HTTP URL]`
+* After: use `git pull origin/master`
+
+### local -/-> upstream
+
+* Only person that has permission can push local to upstream. In addition, this operation is not safe. So consider this way forbidden.
+
+### local --> origin:
+
+`git add yourfile`
+`git commit -m 'comment'`
+`git push origin/master`
