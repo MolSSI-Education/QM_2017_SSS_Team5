@@ -1,4 +1,7 @@
 # Homework complete damping
+#27 July 2017
+#DIIS by Sahil Gulania
+#Tested Molecule Water sto-3g
 
 import numpy as np
 import psi4

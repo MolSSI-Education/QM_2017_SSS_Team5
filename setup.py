@@ -4,9 +4,9 @@ if __name__ == "__main__":
     setuptools.setup(
         name='project',
         version="0.1.1",
-        description='A starting template for Python programs',
+        description='This is a package for QM5',
         author='qm5',
-        author_email='kee.wang@emory.edu',
+        author_email='NA',
         url="https://github.com/MolSSI-SSS/QM_2017_SSS_Team5",
         license='BSD-3C',
         packages=setuptools.find_packages(),
