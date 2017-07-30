@@ -41,7 +41,6 @@ def test_scf(mol):
     assert np.allclose( E_scf, psi4_energy)
 
 
-
 #def test_diis(mol):
 #    pass
 
