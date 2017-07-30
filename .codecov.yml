@@ -2,9 +2,8 @@ comment:
   layout: header, changes, diff
 coverage:
   ignore:
-    - tests/*
-    - dgemm_tests/*
+    - "tests/.*"
     - setup.py
-    - project/diis.py
-    - project/mp2new.py
-    - project/scf_response.py
+    - "project/diis.py"
+    - "project/mp2new.py"
+    - "project/scf_response.py"
