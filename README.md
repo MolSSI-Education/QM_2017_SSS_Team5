@@ -11,6 +11,10 @@ We are team QM5 and we are
 
 # Useful codes/notes
 
+## Links
+
+Check [MolSSI](https://github.com/MolSSI-SSS/Logistics_SSS_2017/blob/master/Links.md) for useful links.
+
 ## Github workflow
 
 See notes for details. Here are some comments.
