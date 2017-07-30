@@ -1,0 +1,5 @@
+#!/bin/bash
+# Automate stuff by a single script
+make 
+./matrix.x
+make clean
