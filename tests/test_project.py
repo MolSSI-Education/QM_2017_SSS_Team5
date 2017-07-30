@@ -14,7 +14,7 @@ import numpy as np
 
 # Import your moldule here
 from project import scf
-# from project import diis
+from project import diis
 # from project import jk
 # from project import soscf
 # from project import mp2
@@ -37,12 +37,16 @@ def test_scf(mol):
     #Each method has one test.
     psi4.set_options({"scf_type": "pk"})
     psi4_energy = psi4.energy("SCF/sto-3g", molecule=mol)
-    E_scf = scf.scf(mol)
-    assert np.allclose( E_scf, psi4_energy)
+    E_total = scf.scf(mol)
+    assert np.allclose( E_total, psi4_energy)
 
-
-#def test_diis(mol):
-#    pass
+@pytest.mark.parametrize("mol",[mol])
+def test_diis(mol):
+    #Each method has one test.
+    psi4.set_options({"scf_type": "pk"})
+    psi4_energy = psi4.energy("SCF/sto-3g", molecule=mol)
+    E_total = diis.diis(mol)
+    assert np.allclose(E_total, psi4_energy)
 
 
 #def test_jk(mol):
