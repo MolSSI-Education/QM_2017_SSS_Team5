@@ -24,11 +24,11 @@ install:
   - conda config --set always_yes yes --set changeps1 no
   - conda update -q conda
   - conda info -a
-  - conda create -q -n sss python=3.5 psi4 scipy lawrap -c psi4/label/dev -c psi4
-#  - conda create -n sss python=3.5 psi4 pytest pytest-cov numpy lawrap cmake scipy numexp -c psi4/label/dev -c psi4
+#  - conda create -q -n sss python=3.5 psi4 scipy lawrap -c psi4/label/dev -c psi4
+  - conda create -n sss python=3.5 psi4 pytest pytest-cov numpy lawrap cmake scipy numexp -c psi4/label/dev -c psi4
   - source activate sss
   - conda list
-  - conda cmake
+#  - conda cmake
   - pip install codecov
 
 before_script:
