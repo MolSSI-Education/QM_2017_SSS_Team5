@@ -37,7 +37,7 @@ before_script:
 
 script:
   - pip install -e .
-  - cd project; cmake ../; make; cd ...
+#  - cd project; cmake ../; make; cd ...
   - py.test -v --cov=./
 
 after_success:
