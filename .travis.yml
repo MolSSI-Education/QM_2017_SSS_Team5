@@ -35,7 +35,7 @@ install:
 before_script:
   - python -V
   - cd project
-  - cmake ../
+  - cmake #../
   - make
   - cd ../
 
