@@ -37,6 +37,11 @@ before_script:
 
 script:
   - pip install -e .
+  - echo $PWD
+  - cd project
+  - echo $PWD
+  - cd ../
+  - echo $PWD
 #  - cd project; cmake ../; make; cd ...
   - py.test -v #--cov=./
 
