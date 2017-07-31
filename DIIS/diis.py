@@ -1,5 +1,3 @@
-# Homework complete damping
-
 import numpy as np
 import psi4
 
@@ -10,11 +8,18 @@ H 1 1.1
 H 1 1.1 2 104
 """)
 
+# number of electrons
+nel = 5
+
+#parameters for convergence 
+e_conv = 1.e-10
+d_conv = 1.e-10
+
 mol.update_geometry()
 mol.print_out()
 
 # Basis Set defined
-bas = psi4.core.BasisSet.build(mol, target="sto-3g")
+bas = psi4.core.BasisSet.build(mol, target="3-21g")
 bas.print_out()
 
 #if(nbf > 100):
@@ -36,39 +41,29 @@ H = T+V
 S = np.array(mints.ao_overlap())
 G = np.array(mints.ao_eri())
 
-#print(S.shape)
-#print(G.shape)
-
 A = mints.ao_overlap()
 A.power(-0.5, 1.e-14)
 A = np.array(A)
 
-# Diagonalize core Hamiltonian
+##################################
 def diag(M,A):
     Fp = A.T @ M @ A
     eps, Cp = np.linalg.eigh(Fp)
     C = A @ Cp
     return eps, C
 
+###################################
 
+
+# Diagonalize core Hamiltonian
 eps, C = diag(H,A)
 Cocc = C[:, :nel]
+
+# Compute Density 
 D = Cocc @ Cocc.T
 
-def lang(A):
-    for i in range(len(A[:,:,1])):
-        for j in range(len(A[:,:,1])):
-            B2 = np.dot(A[i,:,:],A[j,:,:])
-            if (j > 0):
-                B1 = np.concatenate((B1, B2), axis=1)
-            else:
-                B1 = B2
-        if (i > 0):
-            B = np.concatenate((B,B1), axis=0)
-        else:
-           B = B1
-    return B
-
+###################################################
+# Buliding diis matrix 
 def lang2(A):
     for i in range(len(A[:,:,1])):
         for j in range(len(A[:,:,1])):
@@ -85,6 +80,8 @@ def lang2(A):
         else:
             B = B1
     return B
+###################################################
+
 
 for i in range (1,50):
     # Build Fock Matrix
@@ -92,23 +89,16 @@ for i in range (1,50):
     # G = (7, 7, 7, 7)
     # D = (1, 1, 7, 7)
 
-    #Jsum = np.sum(G * D, axis=(2,3) )
-    #Jein = np.einsum("pqrs,rs->pq", G, D)
-
     J = np.einsum("pqrs,rs->pq", G, D)
     K = np.einsum("prqs,rs->pq", G, D)
     F = H + 2.0 * J - K
 
+    # Arranging Fock Matrix side by side 
     if i == 1:
         Fbig = F
     elif (i > 1):
         Fbig = np.concatenate((Fbig, F), axis=0)
         Fbig1 = np.reshape(Fbig,(i,len(S[1,:]),len(S[1,:])))
-
-#    if (i == 0):
-#        Fbig = F
-#    if (i > 0):
-#        Fbig = np.concatenate((Fbig, F), axis=0)
 
     # Build gradient
     grad = F @ D @ S -S @ D @ F
@@ -116,35 +106,24 @@ for i in range (1,50):
 
     #############################################################
     # error vector
-    ervec = A.T @ (F @ D @ S - S @ D @ F) @ A
+    ervec = (F @ D @ S - S @ D @ F)
 
     if (i > 1):
         ervec =  np.concatenate((e1, ervec), axis=0)
         ervec1 = ervec
         ervec1 = np.reshape(ervec1,(i,len(S[1,:]),len(S[1,:])))
-        #print("Heloo")
-        #print((ervec1[:,:,1]))
-        B = lang (ervec1)
         B2 = lang2 (ervec1)
         B2 = np.reshape(B2,(i,i))
         on = np.repeat(-1, i)
         on = np.insert(on, i, 0)
-        B3 = np.zeros((i+1, i+1))
-        B3[:i,:i] = B2
-        B3[i,:] = -1
-        B3[:,i] = -1
-        B3[i,i] = 0
-        #print(B3)
-        C = np.linalg.inv(B3)
-        #print (C)
-        C1  = (C[i,:i])
-        C1 = -1 * C1
-
-        #B5 = np.tensordot(ervec,ervec.T,1)
-        #print(np.reshape(B5.T,(14,14)))
-        #print(np.dot(ervec[0,:,:],ervec[0,:,:]))
-        #print(np.dot(ervec[1,:,:],ervec[1,:,:]))
-
+        B = np.zeros((i+1, i+1))
+        B[:i,:i] = B2
+        B[i,:] = -1
+        B[:,i] = -1
+        B[i,i] = 0
+        C1 = np.linalg.inv(B)
+        C  = (C1[i,:i])
+        C = -1 * C
     #############################################################
     e1 = ervec
 
@@ -169,16 +148,12 @@ for i in range (1,50):
     # Break if e_conv and d_conv are met
     if (E_diff < e_conv) and (grad_rms < d_conv):
             break
-    if (i > 1):
-            #print(ervec1[1:2,:,:])
-            #print(C1)
-            # sprint(ervec1.shape)
-            # print(C1[0]*Fbig1[:1,:,:] +C1[1]*Fbig1[1:2,:,:])
-            # print("Tensor dot")
-            F = (np.tensordot(C1,Fbig1,1))
-            #print(C1)
 
-    #print (F)
+    # New fock as sum of previous fock
+    if (i > 1):
+            F = (np.tensordot(C,Fbig1,1))
+
+    # diagonalize fock to get the new coeffecients 
     eps, C = diag(F,A)
     Cocc = C[:, :nel]
     D = Cocc @ Cocc.T
@@ -188,4 +163,5 @@ print("SCF has finished!\n")
 psi4.set_output_file("output.dat")
 psi4.set_options({"scf_type": "pk"})
 psi4_energy = psi4.energy("SCF/sto-3g", molecule=mol)
+print(psi4_energy)
 print("Energy matches Psi4 %s" % np.allclose(psi4_energy, E_total))
