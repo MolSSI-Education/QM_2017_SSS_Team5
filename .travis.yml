@@ -27,7 +27,6 @@ install:
   - source activate sss
   - conda list
   - pip install codecov
-  - conda install cmake
 
 before_script:
   - python -V
