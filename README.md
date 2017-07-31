@@ -1,6 +1,6 @@
 # QM_2017_SSS_Team5
-[![Build Status](https://travis-ci.org/Kee-Wang/QM_2017_SSS_Team5.svg?branch=master)](https://travis-ci.org/Kee-Wang/QM_2017_SSS_Team5)
-[![codecov](https://codecov.io/gh/Kee-Wang/QM_2017_SSS_Team5/branch/master/graph/badge.svg)](https://codecov.io/gh/Kee-Wang/QM_2017_SSS_Team5)
+[![Build Status](https://travis-ci.org/MolSSI-SSS/QM_2017_SSS_Team5.svg?branch=master)](https://travis-ci.org/MolSSI-SSS/QM_2017_SSS_Team5)
+[![codecov](https://codecov.io/gh/MolSSI-SSS/QM_2017_SSS_Team5/branch/master/graph/badge.svg)](https://codecov.io/gh/MolSSI-SSS/QM_2017_SSS_Team5)
 
 We are team QM5 and we are 
 * cici
@@ -10,6 +10,10 @@ We are team QM5 and we are
 
 
 # Useful codes/notes
+
+## Links
+
+Check [MolSSI](https://github.com/MolSSI-SSS/Logistics_SSS_2017/blob/master/Links.md) for useful links.
 
 ## Github workflow
 

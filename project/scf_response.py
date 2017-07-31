@@ -1,4 +1,7 @@
 # Homework complete damping
+#27 July 2017
+#SCF_Response by Sahil Gulania
+#Not complete yet
 
 import numpy as np
 import psi4

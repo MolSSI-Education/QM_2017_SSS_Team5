@@ -99,3 +99,10 @@ ENV/
 
 # mypy
 .mypy_cache/
+
+# psi4
+output.dat
+timer.dat
+
+# personal files
+mytest.py
