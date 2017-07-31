@@ -8,6 +8,9 @@ We are team QM5 and we are
 * Charitha
 * Kee (Team Leader)
 
+# Objective
+
+This is a project that consists of many sub-projects. All our project are wrapped into a Python module called `project`.
 
 # Useful codes/notes
 

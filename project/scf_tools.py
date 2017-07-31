@@ -4,3 +4,5 @@ def diag(F, A):
     eps, Cp = np.linalg.eigh(Fp)
     C = A @ Cp
     return eps, C
+
+

@@ -37,7 +37,7 @@ t = time.time()
 # First compute SCF energy using Psi4
 scf_e, wfn = psi4.energy('SCF', return_wfn=True)
 
-# Grab data from wavfunction class 
+# Grab data from wavfunction class
 ndocc = wfn.nalpha()
 nmo = wfn.nmo()
 SCF_E = wfn.energy()
