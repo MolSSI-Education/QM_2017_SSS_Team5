@@ -34,10 +34,10 @@ install:
 
 before_script:
   - python -V
-  - cd project; cmake ../; make; cd ...
 
 script:
   - pip install -e .
+  - cd project; cmake ../; make; cd ...
   - py.test -v --cov=./
 
 after_success:
