@@ -146,7 +146,7 @@ py::array_t<double> dgemm_numpy(double alpha,
 // The module to convert C++ into Python module
 PYBIND11_PLUGIN(basic_mod)
 {
-	py::module m("basic_mod", "Kee's basic module");
+	py::module m("basic_mod", "QM5's basic module");
 
 	m.def("print_num", &print_num, "Prints the passed arg");
 	m.def("factorial", &factorial, "Computes n!");
