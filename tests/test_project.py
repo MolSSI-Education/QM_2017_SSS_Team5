@@ -15,6 +15,7 @@ import numpy as np
 # Import your moldule here
 from project import scf
 from project import diis
+from project import basic_mod
 # from project import jk
 # from project import soscf
 # from project import mp2
@@ -47,6 +48,12 @@ def test_diis(mol):
     psi4_energy = psi4.energy("SCF/sto-3g", molecule=mol)
     E_total = diis.diis(mol)
     assert np.allclose(E_total, psi4_energy)
+
+def test_print_num():
+    assert basic_mod.print_num(5) == 5
+
+
+
 
 
 #def test_jk(mol):
