@@ -1,18 +1,103 @@
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
 #include <pybind11/numpy.h>
-
+#include <omp.h>
 #include <string>
 #include <iostream>
 
 
 namespace py = pybind11;
 
+
 long print_num(long s)
 {
-	std::cout << "Num argument: " << s << std::endl;
-	return s;
+#ifdef _OPENMP
+		std::cout << "Hello, OpenMP!" << std::endl;
+		std::cout << "OpenMP will (max) use  " << omp_get_max_threads()<< " threads."<< std::endl;
+#else
+		std::cout << "Hello, World!"	 << std::endl;
+		return 0;
+#endif
+		return 0;
+std::cout << "Num argument: " << s << std::endl;
+return s;
 }
+
+
+
+py::array_t<double> JK_numpy(int n,
+                            py::array_t<double>p,
+                            py::array_t<double>D,
+                            int num )
+{
+    py::buffer_info p_info = p.request();
+    py::buffer_info D_info = D.request();
+
+    size_t J_nrows = p_info.shape[0];
+    size_t J_ncols = p_info.shape[1];
+    size_t nbf = n;
+
+    const double * p_data = static_cast<double *>(p_info.ptr);
+    const double * D_data = static_cast<double *>(D_info.ptr);
+
+    std::vector<double>J_data(J_nrows*J_ncols);
+
+    int m;
+    if(num == 2)
+    {
+    for(size_t i = 0; i < J_nrows; i++)
+    {
+        for(size_t j = 0; j < J_ncols; j++)
+        {
+            double val = 0.0;
+            for(size_t k = 0; k < nbf; k++)
+            {
+                for(size_t l = 0; l < nbf; l++)
+                {
+                        m = i * nbf * nbf *nbf + k * nbf * nbf +j * nbf +l;
+                        val += p_data[m] * D_data[k*nbf+l];
+                }
+            }
+            J_data[i*J_ncols+j] = val;
+
+        }
+     }
+    }
+    else if(num == 1)
+    {
+    for(size_t i = 0; i < J_nrows; i++)
+    {
+        for(size_t j = 0; j < J_ncols; j++)
+        {
+            double val = 0.0;
+            for(size_t k = 0; k < nbf; k++)
+            {
+                for(size_t l = 0; l < nbf; l++)
+                {
+                    m = i * nbf * nbf *nbf + j * nbf * nbf +k * nbf +l;
+                        val += p_data[m] * D_data[k*nbf+l];
+                }
+            }
+            J_data[i*J_ncols+j] = val;
+
+        }
+     }
+    }
+
+    py::buffer_info Jbuf =
+        {
+            J_data.data(),
+            sizeof(double),
+            py::format_descriptor<double>::format(),
+            2,
+            { J_nrows, J_ncols },
+            { J_nrows * sizeof(double), sizeof(double) }
+        };
+
+    return py::array_t<double>(Jbuf);
+}
+
+
 
 long factorial(long n)
 {
@@ -155,6 +240,7 @@ PYBIND11_PLUGIN(basic_mod)
 	m.def("dot_product", &dot_product);
 	m.def("dot_product_numpy", &dot_product_numpy);
 	m.def("dgemm_numpy", &dgemm_numpy);
+	m.def("JK_numpy", &JK_numpy);
 	
 	return m.ptr();
 }
