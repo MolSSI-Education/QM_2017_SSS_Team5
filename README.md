@@ -12,6 +12,16 @@ We are team QM5 and we are
 
 This is a project that consists of many sub-projects. All our project are wrapped into a Python module called `project`.
 
+## Project status
+
+- [x] SCF
+- [x] DIIS
+- [x] JK
+- [ ] SOSCF: In progress
+- [x] MP2
+- [x] C++ integration: Using `CMakeLists.txt` and `cmake` to make `c++` modules callable in Python.
+- [x] OpenMP inegration: Using OpenMP in `c++` module that can be called in Python! (SUPER AWESOME)
+
 # Useful codes/notes
 
 ## Links
