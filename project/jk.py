@@ -1,7 +1,7 @@
 import numpy as np
 import psi4
 
-def jk(mol,basis="sto-3g"):
+def jk(mol,basis="sto-3g",iteration=20):
     """
     Function that calcultate JK intergrals
     """
@@ -22,8 +22,7 @@ def jk(mol,basis="sto-3g"):
     bas.print_out()
 
     # Build a Auxiliary basis set(df)
-    aux = psi4.core.BasisSet.build(mol, fitrole="JKFIT", other=basis)
-
+    aux = psi4.core.BasisSet.build(mol, key="DF_BASIS_SCF", fitrole="JKFIT", other=basis.upper())
 
     # The zero basis set
     zero_bas = psi4.core.BasisSet.zero_ao_basis_set()
@@ -75,7 +74,7 @@ def jk(mol,basis="sto-3g"):
 
     E_old = 0.0
     F_old = None
-    for iteration in range(25):
+    for iteration in range(iteration):
         Xj = np.einsum("Prs,rs->P", Prs, D)#Build χP
         Xk = np.einsum("Pqs,rs->Pqr", Prs, D)#Build Xk
 
@@ -126,10 +125,10 @@ def jk(mol,basis="sto-3g"):
     #print("Energy matches Psi4 %s" % np.allclose(psi4_energy, E_total))
     return E_total
 
-mol = psi4.geometry("""
-        O
-        H 1 1.1
-        H 1 1.1 2 104
-        symmetry c1
-        """)
-print(jk(mol))
+#mol = psi4.geometry("""
+#         O
+#         H 1 1.1
+#         H 1 1.1 2 104
+#         symmetry c1
+#         """)
+# print(jk(mol, iteration = 40))
