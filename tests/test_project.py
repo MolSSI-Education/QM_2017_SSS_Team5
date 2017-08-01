@@ -63,9 +63,11 @@ def test_mp2(mol):
 @pytest.mark.parametrize("mol",[mol])
 #Using `test_` as function so pytest can recognize.
 def test_jk(mol):
-    psi4.set_options({"scf_type": "pk"})
+    psi4.set_options({"scf_type": "df"})
+    psi4.set_options({"basis": "sto-3g"})
     psi4_energy = psi4.energy("SCF/sto-3g", molecule=mol)
-    E_total = jk.jk(mol)
+    E_total = jk.jk(mol,iteration=40)
+    print(E_total)
     assert np.allclose(E_total, psi4_energy)
 
 
