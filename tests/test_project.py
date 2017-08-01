@@ -16,7 +16,7 @@ import numpy as np
 from project import scf
 from project import diis
 from project import basic_mod
-# from project import jk
+from project import jk
 # from project import soscf
 from project import mp2
 
@@ -28,7 +28,6 @@ mol = psi4.geometry("""
         H 1 1.1 2 104
         symmetry c1
         """)
-
 basis = "sto-3g"
 
 # Parametrize mol to pass as argument.[mol] has be as type `list`.
@@ -51,7 +50,6 @@ def test_diis(mol):
     assert np.allclose(E_total, psi4_energy)
 
 
-
 @pytest.mark.parametrize("mol",[mol])
 def test_mp2(mol):
     #Each method has one test.
@@ -61,10 +59,19 @@ def test_mp2(mol):
     assert result == True
 
 
+
+@pytest.mark.parametrize("mol",[mol])
+#Using `test_` as function so pytest can recognize.
+def test_jk(mol):
+    psi4.set_options({"scf_type": "pk"})
+    psi4_energy = psi4.energy("SCF/sto-3g", molecule=mol)
+    E_total = jk.jk(mol)
+    assert np.allclose(E_total, psi4_energy)
+
+
 def test_print_num():
+    #Test OpenMP
     assert basic_mod.print_num(5) == 5
-
-
 
 
 

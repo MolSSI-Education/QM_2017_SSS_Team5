@@ -1,17 +1,11 @@
 import numpy as np
 import psi4
 
-def JK_Algorithms(mol,basis):
+def jk(mol,basis="sto-3g"):
     """
     Function that calcultate JK intergrals
     """
     np.set_printoptions(suppress=True, precision=4)
-
-    #mol = psi4.geometry("""
-    #O
-    #H 1 1.1
-    #H 1 1.1 2 104
-    #""")
 
     # Build a molecule
     mol.update_geometry()
@@ -24,11 +18,11 @@ def JK_Algorithms(mol,basis):
     damp_start = 5
 
     # Build a basis
-    bas = psi4.core.BasisSet.build(mol, target="basis")
+    bas = psi4.core.BasisSet.build(mol, target=basis)
     bas.print_out()
 
     # Build a Auxiliary basis set(df)
-    aux = psi4.core.BasisSet.build(mol, fitrole="JKFIT", other="basis")
+    aux = psi4.core.BasisSet.build(mol, fitrole="JKFIT", other=basis)
 
 
     # The zero basis set
@@ -81,7 +75,7 @@ def JK_Algorithms(mol,basis):
 
     E_old = 0.0
     F_old = None
-    for iteration in range(15):
+    for iteration in range(25):
         Xj = np.einsum("Prs,rs->P", Prs, D)#Build χP
         Xk = np.einsum("Pqs,rs->Pqr", Prs, D)#Build Xk
 
@@ -121,9 +115,21 @@ def JK_Algorithms(mol,basis):
         D = Cocc @ Cocc.T
 
 #    print("SCF has finished!\n")
+
+
+
+
+
+    #psi4.set_output_file("output.dat")
+    #psi4.set_options({"scf_type": "pk"})
+    #psi4_energy = psi4.energy("SCF/sto-3g", molecule=mol)
+    #print("Energy matches Psi4 %s" % np.allclose(psi4_energy, E_total))
     return E_total
 
-#psi4.set_output_file("output.dat")
-#psi4.set_options({"scf_type": "pk"})
-#psi4_energy = psi4.energy("SCF/aug-cc-pVDZ", molecule=mol)
-#print("Energy matches Psi4 %s" % np.allclose(psi4_energy, E_total))
+mol = psi4.geometry("""
+        O
+        H 1 1.1
+        H 1 1.1 2 104
+        symmetry c1
+        """)
+print(jk(mol))
