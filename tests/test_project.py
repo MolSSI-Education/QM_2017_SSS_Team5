@@ -18,7 +18,7 @@ from project import diis
 from project import basic_mod
 # from project import jk
 # from project import soscf
-# from project import mp2
+from project import mp2
 
 
 #Initialize testing env
@@ -26,6 +26,7 @@ mol = psi4.geometry("""
         O
         H 1 1.1
         H 1 1.1 2 104
+        symmetry c1
         """)
 
 basis = "sto-3g"
@@ -48,6 +49,17 @@ def test_diis(mol):
     psi4_energy = psi4.energy("SCF/sto-3g", molecule=mol)
     E_total = diis.diis(mol)
     assert np.allclose(E_total, psi4_energy)
+
+
+
+@pytest.mark.parametrize("mol",[mol])
+def test_mp2(mol):
+    #Each method has one test.
+    mp2_e = mp2.mp2(mol, "aug-cc-pvdz")
+    psi4.energy('MP2')
+    result = psi4.compare_values(psi4.core.get_variable('MP2 TOTAL ENERGY'), mp2_e, 6, 'MP2 Energy')
+    assert result == True
+
 
 def test_print_num():
     assert basic_mod.print_num(5) == 5
