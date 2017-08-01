@@ -1,8 +1,3 @@
-# Homework complete damping
-#27 July 2017
-#SCF_Response by Sahil Gulania
-#Not complete yet
-
 import numpy as np
 import psi4
 
@@ -48,16 +43,21 @@ A = np.array(A)
 
 # Diagonalize core Hamiltonian
 def diag(M,A):
-    Fp = A.T @ M @ A
-    eps, Cp = np.linalg.eigh(Fp)
-    C = A @ Cp
-    return eps, C
+  Fp = A.T @ M @ A
+  eps, Cp = np.linalg.eigh(Fp)
+  C = A @ Cp
+  return eps, C
+
+# gram_schmidt_orthogonalize
+def gram_schmidt_columns(X):
+    Q, R = np.linalg.qr(X)
+    return Q
 
 eps, C = diag(H,A)
 Cocc = C[:, :nel]
 D = Cocc @ Cocc.T
 
-for i in range (1,50):
+for i in range (1,10):
     # Build Fock Matrix
     # F = H + 2 * G_pqrs D_rs - G_prqs D_rs
     # G = (7, 7, 7, 7)
@@ -70,40 +70,44 @@ for i in range (1,50):
     K = np.einsum("prqs,rs->pq", G, D)
     F = H + 2.0 * J - K
 
-    K1 = np.empty([len(S[1,:]), len(S[1,:])])
-    #################################
-    # SOSCF
-    HK = np.empty([len(S[1,:]), len(S[1,:])])
-    for p in range(1,len(S[1,:])):
-        for q in range(1,len(S[1,:])):
-
-            for o in range(1,len(S[1,:])):
-                HK[p,q] = HK[p,q] + K1[p,o]*H[o,q] + K1[q,o]*H[p,o]
+    occ = nel
+    vir = len(F[0,:]) - nel
 
 
+    #########################################
+    # Compute Fock Matrix in MO basis.
+    FMO = np.dot(C.T,np.dot(F,C))
+    #print(FMO)
+    #########################################
+    #print(C)
+    #break
 
-    ##
-    GK = np.empty([len(S[1,:]), len(S[1,:]), len(S[1,:]), len(S[1,:]) ])
-    for p in range(1,len(S[1,:])):
-        for q in range(1,len(S[1,:])):
 
-            for r in range(1,len(S[1,:])):
-                for s in range(1,len(S[1,:])):
-                    for o in range(1,len(S[1,:])):
-                        GK[p,q,r,s] =  GK[p,q,r,s] + \
-                            K1[p,o]*G[o,p,r,s] + K1[q,o]*G[p,o,r,s] + \
-                            K1[r,o]*G[p,q,o,s] + K1[s,o]*G[p,q,r,o]
-    #
-    JK = np.einsum("pqrs,rs->pq", GK, D)
-    KK = np.einsum("prqs,rs->pq", GK, D)
-    FK = HK + 2.0 * JK - KK
+    ##########################################
+    # Initial Hessian and
+    # Initial gradient
 
+    Hess = (occ*vir, occ*vir)
+    Hess = np.zeros(Hess)
+
+    orbgrad = (occ*vir)
+    orbgrad = np.zeros(orbgrad)
+    #print(FMO)
+    kk = 0
+    for j in range(0,occ):
+        for k in range (occ, occ + vir ):
+            Hess [kk,kk] = 4*(FMO[k,k] - FMO[j,j])
+            #print(FMO[k,k],FMO[j,j],4*(FMO[k,k] - FMO[j,j]))
+            #print(FMO[j][k])
+            orbgrad [kk] = 4*FMO[j,k]
+            kk = kk +1
+            #print(j,k)
+    ##########################################
+    #break
+    #print(orbgrad)
     # Build gradient
     grad = F @ D @ S -S @ D @ F
-
-    grad_rms = np.mean((np.mean(grad) - grad)**2)**0.5
-    #print(np.mean((np.mean(grad) - grad)**2)**0.5)
-    #print(np.mean(grad**2) ** 0.5)
+    grad_rms = np.mean(grad**2) ** 0.5
 
     E_electric = np.sum((F + H) * D)
     #print(E_electric)
@@ -114,24 +118,45 @@ for i in range (1,50):
     elif (i > 1):
         E_diff = E_total - E_old
 
+    if (E_diff < 1e-10 and i > 1):
+        F = H + 2.0 * J - K
+
     E_old = E_total
-    print("Iter=%3d  E = % 16.12f  dE = % 8.4e  dRMS = % 8.4e" %
+    print("Iter=%3d  E = % 16.12f  E_diff = % 8.4e  D_diff = % 8.4e" %
             (i, E_total, E_diff, grad_rms))
 
     # Break if e_conv and d_conv are met
     if (E_diff < e_conv) and (grad_rms < d_conv):
-        break
+            break
 
-    if (i == 1):
+
+    #######################################
+    #SOSCF STEP
+    XX  = np.dot(orbgrad,-1*np.linalg.inv(Hess))
+
+    AA = np.identity(occ+vir)
+    kk = 0
+    for j in range(occ, occ+vir):
+        for k in range (0, occ):
+            AA [j,k] = XX [kk]
+            AA [k,j] = -XX [kk]
+            kk = kk+1
+
+    GAA = gram_schmidt_columns(AA)
+    #C = np.dot(C,GAA)
+    #######################################
+
+    if (grad_rms > 0.01):
         eps, C = diag(F,A)
-    elif(i > 4):
-        KK = np.dot(-1*grad,np.linalg.inv(FK))
-        I = np.identity(len(S[1,:]))
-        U = np.add(I,KK)
-        C = np.dot(U,C)
+
+    if (grad_rms < 0.01):
+        print(GAA)
+        print(AA)
+        C = np.dot(C,GAA)
 
     Cocc = C[:, :nel]
     D = Cocc @ Cocc.T
+
 
 print("SCF has finished!\n")
 
@@ -139,3 +164,4 @@ psi4.set_output_file("output.dat")
 psi4.set_options({"scf_type": "pk"})
 psi4_energy = psi4.energy("SCF/sto-3g", molecule=mol)
 print("Energy matches Psi4 %s" % np.allclose(psi4_energy, E_total))
+
