@@ -39,6 +39,7 @@ script:
   - pip install -e .
   - echo $PWD
   - cd project
+  - bash clean.sh
   - cmake ../
   - make
   - echo $PWD
