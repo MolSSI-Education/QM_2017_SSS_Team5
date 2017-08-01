@@ -16,9 +16,9 @@ long print_num(long s)
 		std::cout << "OpenMP will (max) use  " << omp_get_max_threads()<< " threads."<< std::endl;
 #else
 		std::cout << "Hello, World!"	 << std::endl;
-		return 0;
+		return s;
 #endif
-		return 0;
+		return s;
 std::cout << "Num argument: " << s << std::endl;
 return s;
 }
